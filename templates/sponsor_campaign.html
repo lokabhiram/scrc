@@ -134,11 +134,10 @@
         <div>
             {% if campaigns %}
                 {% for campaign in campaigns %}
-                    <div class="campaign" onclick="showCampaignDetails('{{ campaign.title }}', '{{ campaign.budget }}')">
+                    <div class="campaign" onclick="showCampaignDetails('{{ campaign.id }}', '{{ campaign.title }}', '{{ campaign.budget }}')">
                         <h2>{{ campaign.title }}</h2>
                         <p>{{ campaign.description }}</p>
                         <p>{{ campaign.date }}</p>
-
                     </div>
                 {% endfor %}
             {% else %}
@@ -179,8 +178,32 @@
             <div class="modal-content">
                 <h2 id="campaignTitle"></h2>
                 <p>Budget: <span id="campaignBudget"></span></p>
-                <button type="button" class="add-btn" onclick="createAdRequest()">Create Ad Request</button>
+                <button type="button" class="add-btn" id="createAdRequestBtn">Create Ad Request</button>
                 <button type="button" class="cancel-btn" id="detailsCancelBtn">Close</button>
+            </div>
+        </div>
+
+        <div class="modal" id="addAdRequestModal">
+            <div class="modal-content">
+                <form method="POST" action="{{ url_for('add_ad_request') }}"> 
+                    <h2>Create Ad Request</h2>
+                    <input type="hidden" id="campaignId" name="campaign_id">
+                    
+                    <label for="ad_name">Ad Name:</label><br>
+                    <input type="text" id="ad_name" name="ad_name" required><br>
+
+                    <label for="ad_description">Ad Description:</label><br>
+                    <textarea id="ad_description" name="ad_description" required></textarea><br>
+
+                    <label for="ad_terms">Ad Terms:</label><br>
+                    <textarea id="ad_terms" name="ad_terms" required></textarea><br>
+
+                    <label for="budget">Budget:</label><br>
+                    <input type="number" id="budget" name="budget" required><br><br>
+
+                    <button type="submit" class="add-btn">Add</button>
+                    <button type="button" class="cancel-btn" id="adRequestCancelBtn">Cancel</button>
+                </form>
             </div>
         </div>
 
@@ -200,6 +223,9 @@
         const cancelBtn = document.getElementById('cancelBtn');
         const campaignDetailsModal = document.getElementById('campaignDetailsModal');
         const detailsCancelBtn = document.getElementById('detailsCancelBtn');
+        const createAdRequestBtn = document.getElementById('createAdRequestBtn');
+        const addAdRequestModal = document.getElementById('addAdRequestModal');
+        const adRequestCancelBtn = document.getElementById('adRequestCancelBtn');
 
         addCampaignBtn.addEventListener('click', () => {
             addCampaignModal.style.display = 'flex';
@@ -213,15 +239,20 @@
             campaignDetailsModal.style.display = 'none';
         });
 
-        function showCampaignDetails(title, budget) {
+        adRequestCancelBtn.addEventListener('click', () => {
+            addAdRequestModal.style.display = 'none';
+        });
+
+        createAdRequestBtn.addEventListener('click', () => {
+            campaignDetailsModal.style.display = 'none';
+            addAdRequestModal.style.display = 'flex';
+        });
+
+        function showCampaignDetails(id, title, budget) {
             document.getElementById('campaignTitle').innerText = title;
             document.getElementById('campaignBudget').innerText = budget;
+            document.getElementById('campaignId').value = id;
             campaignDetailsModal.style.display = 'flex';
-        }
-
-        function createAdRequest() {
-            // Add functionality to create a new ad request here
-            alert('Create ad request functionality to be implemented.');
         }
     </script>
 </body>

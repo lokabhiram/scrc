@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from models import *
+from flask import Flask, request, redirect, url_for, flash, session, render_template
+from models import db, Admin, User, Influencer, Sponsor, Campaign, AdRequest
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
@@ -42,28 +42,27 @@ def admin_login():
             return render_template("admin_login.html", error=error)
 
 @app.route('/user/login', methods=['GET', 'POST'])
-def user_login():
+def login():
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        user_type = request.form.get('user_type')
-
-        user = User.query.filter_by(username=username, user_type=user_type).first()
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
 
         if user and check_password_hash(user.password, password):
             session['logged_in'] = True
-            session['username'] = username
-            session['user_type'] = user_type
-            if user_type == 'influencer':
-                return redirect(url_for('influencer_profile'))
-            elif user_type == 'sponsor':
+            session['user_id'] = user.id  # Set user_id for both influencer and sponsor
+            session['username'] = user.username
+            session['user_type'] = user.user_type
+
+            flash('You were successfully logged in', 'success')
+            if user.user_type == 'sponsor':
                 return redirect(url_for('sponsor_profile'))
+            elif user.user_type == 'influencer':
+                return redirect(url_for('influencer_profile'))
         else:
-            flash('Invalid username or password.', 'error')
-            return redirect(url_for('user_login'))
+            flash('Invalid credentials', 'danger')
 
     return render_template('user_login.html')
-
 @app.route('/register/influencer', methods=['POST'])
 def register_influencer():
     username = request.form['username']
@@ -172,6 +171,38 @@ def sponsor_campaigns():
 
     return redirect(url_for('user_login'))
 
+@app.route('/sponsor/ad_request', methods=['POST'])
+def add_ad_request():
+    print(session)  # Debug print
+
+    if 'logged_in' in session and session.get('user_type') == 'sponsor':
+        campaign_id = request.form.get('campaign_id')
+        ad_name = request.form.get('ad_name')
+        ad_description = request.form.get('ad_description')
+        ad_terms = request.form.get('ad_terms')
+        budget = request.form.get('budget')
+
+        # Assuming the logged-in user is a sponsor
+        sponsor = Sponsor.query.get(session['user_id'])
+
+        # Create the new ad request
+        new_ad_request = AdRequest(
+            influencer_id=session['user_id'],  # This should be the sponsor's ID
+            campaign_id=campaign_id,
+            ad_name=ad_name,
+            ad_description=ad_description,
+            ad_terms=ad_terms,
+            budget=budget
+        )
+
+        db.session.add(new_ad_request)
+        db.session.commit()
+
+        flash('Ad request created successfully!', 'success')
+        return redirect(url_for('sponsor_campaigns'))
+
+    flash('You must be logged in as a sponsor to create an ad request', 'danger')
+    return redirect(url_for('login'))
 
 
 @app.route('/sponsor/campaign/<int:campaign_id>')
@@ -186,35 +217,7 @@ def view_campaign(campaign_id):
     else:
         return redirect(url_for('user_login'))
 
-@app.route('/sponsor/ad_request', methods=['POST'])
-def add_ad_request():
-    if 'logged_in' in session and session.get('user_type') == 'sponsor':
-        campaign_id = request.form.get('campaign_id')
-        ad_name = request.form.get('ad_name')
-        ad_description = request.form.get('ad_description')
-        ad_terms = request.form.get('ad_terms')
-        budget = request.form.get('budget')
 
-        # Assuming you have an AdRequest model (not provided in your code)
-        new_ad_request = AdRequest(
-            campaign_id=campaign_id,
-            ad_name=ad_name,
-            ad_description=ad_description,
-            ad_terms=ad_terms,
-            budget=budget
-        )
-
-        try:
-            db.session.add(new_ad_request)
-            db.session.commit()
-            flash('Ad request added successfully!', 'success')
-            return redirect(url_for('view_campaign', campaign_id=campaign_id))
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Error adding ad request: {str(e)}', 'error')
-            return redirect(url_for('view_campaign', campaign_id=campaign_id))
-    else:
-        return redirect(url_for('user_login'))
 
 @app.route('/ad_request/create', methods=['POST'])
 def create_ad_request():

@@ -50,6 +50,10 @@ class AdRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     influencer_id = db.Column(db.Integer, db.ForeignKey('influencer.id'), nullable=False)
     campaign_id = db.Column(db.Integer, db.ForeignKey('campaign.id'), nullable=False)
+    ad_name = db.Column(db.String(100), nullable=False)
+    ad_description = db.Column(db.Text, nullable=False)
+    ad_terms = db.Column(db.Text, nullable=False)
+    budget = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(20), nullable=False, default='Pending')  # Status can be 'Pending', 'Accepted', or 'Rejected'
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
