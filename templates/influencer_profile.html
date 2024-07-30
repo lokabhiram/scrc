@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Influencer's Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dashboard {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .header nav a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #000;
+            font-size: 16px;
+        }
+
+        .header nav a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+        }
+
+        .sidebar {
+            width: 300px;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            background-color: #98D08F;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+        }
+
+        .main {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .campaign, .request {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .view-btn, .accept-btn, .reject-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .view-btn {
+            background-color: #FFD700;
+            color: #000;
+        }
+
+        .accept-btn {
+            background-color: #90EE90;
+            color: #000;
+        }
+
+        .reject-btn {
+            background-color: #FF6347;
+            color: #fff;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>{{ username }}'s Dashboard</h1>
+            <nav>
+                <a href="{{ url_for('influencer_profile') }}" class="active">Profile</a>
+                <a href="#">Find</a>
+                <a href="#">Stats</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </nav>
+        </div>
+        <div class="content">
+            <div class="sidebar">
+                <div class="profile-pic"></div>
+                <p>rating 5</p>
+                <p>earnings this month<br>$500</p>
+            </div>
+            <div class="main">
+                <p>Welcome {{ username }}</p>
+                <h2>Active Campaigns:</h2>
+                <div class="campaign">
+                    <span>Campaign 01 | Progress 10%</span>
+                    <button class="view-btn">View</button>
+                </div>
+                <div class="campaign">
+                    <span>Campaign 02 | Progress 40%</span>
+                    <button class="view-btn">View</button>
+                </div>
+                <h2>New Requests:</h2>
+                <div class="request">
+                    <span>Campaign 04 | Company 01</span>
+                    <button class="view-btn">View</button>
+                    <button class="accept-btn">Accept</button>
+                    <button class="reject-btn">Reject</button>
+                </div>
+                <div class="request">
+                    <span>Campaign 05 | Company 01</span>
+                    <button class="view-btn">View</button>
+                    <button class="accept-btn">Accept</button>
+                    <button class="reject-btn">Reject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

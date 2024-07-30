@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sponsor Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background-color: #f1f1f1;
+            padding: 10px 0;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin: 0 10px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: black;
+            padding: 5px 10px;
+        }
+
+        nav ul li a.active {
+            background-color: lightblue;
+            border-radius: 5px;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        section {
+            margin-top: 20px;
+        }
+
+        .campaign, .request {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .campaign button, .request button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button.view {
+            background-color: #f9e79f;
+        }
+
+        button.accept {
+            background-color: #58d68d;
+        }
+
+        button.reject {
+            background-color: #f1948a;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('sponsor_profile') }}" class="active">Profile</a></li>
+                <li><a href="{{ url_for('sponsor_campaigns') }}">Campaigns</a></li>
+                <li><a href="#find">Find</a></li>
+                <li><a href="#stats">Stats</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Welcome Sponsor 01</h1>
+        <section>
+            <h2>Active Campaigns:</h2>
+            <div class="campaign">
+                <span>Campaign 01 | Progress 10%</span>
+                <button class="view">View</button>
+            </div>
+            <div class="campaign">
+                <span>Campaign 02 | Progress 40%</span>
+                <button class="view">View</button>
+            </div>
+        </section>
+        <section>
+            <h2>New Requests:</h2>
+            <div class="request">
+                <span>Campaign 04 | Influencer 01</span>
+                <button class="view">View</button>
+                <button class="accept">Accept</button>
+                <button class="reject">Reject</button>
+            </div>
+            <div class="request">
+                <span>Campaign 05 | Influencer 02</span>
+                <button class="view">View</button>
+                <button class="accept">Accept</button>
+                <button class="reject">Reject</button>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
