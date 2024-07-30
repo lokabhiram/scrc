@@ -117,6 +117,7 @@
             display: inline-block;
             width: 200px;
             vertical-align: top;
+            cursor: pointer;
         }
 
         .campaign img {
@@ -133,7 +134,7 @@
         <div>
             {% if campaigns %}
                 {% for campaign in campaigns %}
-                    <div class="campaign">
+                    <div class="campaign" onclick="showCampaignDetails('{{ campaign.title }}', '{{ campaign.budget }}')">
                         <h2>{{ campaign.title }}</h2>
                         <p>{{ campaign.description }}</p>
                         <p>{{ campaign.date }}</p>
@@ -174,6 +175,15 @@
             </div>
         </div>
 
+        <div class="modal" id="campaignDetailsModal">
+            <div class="modal-content">
+                <h2 id="campaignTitle"></h2>
+                <p>Budget: <span id="campaignBudget"></span></p>
+                <button type="button" class="add-btn" onclick="createAdRequest()">Create Ad Request</button>
+                <button type="button" class="cancel-btn" id="detailsCancelBtn">Close</button>
+            </div>
+        </div>
+
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <ul>
@@ -188,6 +198,8 @@
         const addCampaignBtn = document.getElementById('addCampaignBtn');
         const addCampaignModal = document.getElementById('addCampaignModal');
         const cancelBtn = document.getElementById('cancelBtn');
+        const campaignDetailsModal = document.getElementById('campaignDetailsModal');
+        const detailsCancelBtn = document.getElementById('detailsCancelBtn');
 
         addCampaignBtn.addEventListener('click', () => {
             addCampaignModal.style.display = 'flex';
@@ -196,6 +208,21 @@
         cancelBtn.addEventListener('click', () => {
             addCampaignModal.style.display = 'none';
         });
+
+        detailsCancelBtn.addEventListener('click', () => {
+            campaignDetailsModal.style.display = 'none';
+        });
+
+        function showCampaignDetails(title, budget) {
+            document.getElementById('campaignTitle').innerText = title;
+            document.getElementById('campaignBudget').innerText = budget;
+            campaignDetailsModal.style.display = 'flex';
+        }
+
+        function createAdRequest() {
+            // Add functionality to create a new ad request here
+            alert('Create ad request functionality to be implemented.');
+        }
     </script>
 </body>
 </html>
