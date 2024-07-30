@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ campaign.title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        header {
+            background-color: #f1f1f1;
+            padding: 10px 0;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 10px;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: black;
+            padding: 5px 10px;
+        }
+        nav ul li a.active {
+            background-color: lightblue;
+            border-radius: 5px;
+        }
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        .campaign-details {
+            margin-bottom: 20px;
+        }
+        .ad-request-form {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('sponsor_profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('sponsor_campaigns') }}" class="active">Campaigns</a></li>
+                <li><a href="{{ url_for('find_page') }}">Find</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="campaign-details">
+            <h2>{{ campaign.title }}</h2>
+            <p>{{ campaign.description }}</p>
+            <img src="{{ campaign.image }}" alt="{{ campaign.title }}">
+            <p>Niche: {{ campaign.niche }}</p>
+            <p>Date: {{ campaign.date }}</p>
+            <button onclick="showAdRequestForm()">Create New Ad Request</button>
+        </div>
+        
+        <div class="ad-request-form" id="ad-request-form">
+            <form method="POST" action="{{ url_for('add_ad_request') }}">
+                <input type="hidden" name="campaign_id" value="{{ campaign.id }}">
+                <label for="ad_name">Ad Name:</label>
+                <input type="text" id="ad_name" name="ad_name" required>
+                
+                <label for="ad_description">Ad Description:</label>
+                <textarea id="ad_description" name="ad_description" required></textarea>
+                
+                <label for="ad_terms">Ad Terms:</label>
+                <textarea id="ad_terms" name="ad_terms" required></textarea>
+                
+                <label for="budget">Budget:</label>
+                <input type="number" id="budget" name="budget" required>
+                
+                <button type="button" onclick="cancelAdRequest()">Cancel</button>
+                <button type="submit">Add</button>
+            </form>
+            <button onclick="redirectToFindPage()">Find</button>
+        </div>
+    </main>
+    <script>
+        function showAdRequestForm() {
+            document.getElementById('ad-request-form').style.display = 'block';
+        }
+
+        function cancelAdRequest() {
+            document.getElementById('ad-request-form').style.display = 'none';
+        }
+
+        function redirectToFindPage() {
+            window.location.href = "{{ url_for('find_page') }}";
+        }
+    </script>
+</body>
+</html>

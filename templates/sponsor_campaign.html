@@ -109,12 +109,42 @@
         .modal-content .add-btn {
             background-color: #58d68d;
         }
+
+        .campaign {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            display: inline-block;
+            width: 200px;
+            vertical-align: top;
+        }
+
+        .campaign img {
+            max-width: 100%;
+            height: auto;
+        }
     </style>
 </head>
 <body>
     <header>
     </header>
     <main>
+        <!-- Display list of campaigns -->
+        <div>
+            {% if campaigns %}
+                {% for campaign in campaigns %}
+                    <div class="campaign">
+                        <h2>{{ campaign.title }}</h2>
+                        <p>{{ campaign.description }}</p>
+                        <p>{{ campaign.date }}</p>
+
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No campaigns found.</p>
+            {% endif %}
+        </div>
+
         <div class="add-campaign" id="addCampaignBtn"> 
             <span>Add Campaign</span>
         </div>

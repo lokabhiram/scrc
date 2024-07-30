@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -44,3 +45,13 @@ class Campaign(db.Model):
     sponsor_id = db.Column(db.Integer, db.ForeignKey('sponsor.id'), nullable=False)
 
     sponsor = db.relationship('Sponsor', backref=db.backref('campaigns', lazy=True))
+
+class AdRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    influencer_id = db.Column(db.Integer, db.ForeignKey('influencer.id'), nullable=False)
+    campaign_id = db.Column(db.Integer, db.ForeignKey('campaign.id'), nullable=False)
+    status = db.Column(db.String(20), nullable=False, default='Pending')  # Status can be 'Pending', 'Accepted', or 'Rejected'
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    influencer = db.relationship('Influencer', backref=db.backref('ad_requests', lazy=True))
+    campaign = db.relationship('Campaign', backref=db.backref('ad_requests', lazy=True))

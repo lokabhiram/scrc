@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from models import db, Admin, User, Influencer, Sponsor, Campaign
+from models import *
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
@@ -134,31 +134,28 @@ def sponsor_profile():
     else:
         return redirect(url_for('user_login'))
 
-@app.route('/sponsor/campaigns', methods=['GET', 'POST']) 
+@app.route('/sponsor/campaigns', methods=['GET', 'POST'])
 def sponsor_campaigns():
     if 'logged_in' in session and session.get('user_type') == 'sponsor':
-        if request.method == 'POST':
-            # Handle campaign creation
-            title = request.form['title']
-            description = request.form['description']
-            image = request.form['image'] 
-            niche = request.form['niche']
-            date = request.form['date'] 
-
-            # Get the logged-in sponsor's ID from the database
-            sponsor = Sponsor.query.filter_by(username=session['username']).first()
-            
-            if sponsor:  # Check if a sponsor was found
-                sponsor_id = sponsor.id
+        sponsor = Sponsor.query.filter_by(username=session['username']).first()
+        if sponsor:
+            if request.method == 'POST':
+                # Handle campaign creation
+                title = request.form['title']
+                description = request.form['description']
+                image = request.form['image'] 
+                niche = request.form['niche']
+                date = request.form['date'] 
 
                 new_campaign = Campaign(
-                    title=title, 
-                    description=description, 
-                    image=image, 
-                    niche=niche, 
-                    date=date, 
-                    sponsor_id=sponsor_id 
+                    title=title,
+                    description=description,
+                    image=image,
+                    niche=niche,
+                    date=date,
+                    sponsor_id=sponsor.id
                 )
+
                 try:
                     db.session.add(new_campaign)
                     db.session.commit()
@@ -169,13 +166,104 @@ def sponsor_campaigns():
                     flash(f'Error adding campaign: {str(e)}', 'error')
                     return redirect(url_for('sponsor_campaigns'))
 
-            else: 
-                flash('Error: Could not find sponsor. Please log in again.', 'error')
-                return redirect(url_for('user_login'))
+            # Fetch the sponsor's campaigns
+            campaigns = Campaign.query.filter_by(sponsor_id=sponsor.id).all()
+            return render_template('sponsor_campaign.html', campaigns=campaigns)
 
-        return render_template('sponsor_campaign.html')
+    return redirect(url_for('user_login'))
+
+
+
+@app.route('/sponsor/campaign/<int:campaign_id>')
+def view_campaign(campaign_id):
+    if 'logged_in' in session and session.get('user_type') == 'sponsor':
+        campaign = Campaign.query.get(campaign_id)
+        if campaign:
+            return render_template('view_campaign.html', campaign=campaign)
+        else:
+            flash('Campaign not found.', 'error')
+            return redirect(url_for('sponsor_campaigns'))
     else:
         return redirect(url_for('user_login'))
+
+@app.route('/sponsor/ad_request', methods=['POST'])
+def add_ad_request():
+    if 'logged_in' in session and session.get('user_type') == 'sponsor':
+        campaign_id = request.form.get('campaign_id')
+        ad_name = request.form.get('ad_name')
+        ad_description = request.form.get('ad_description')
+        ad_terms = request.form.get('ad_terms')
+        budget = request.form.get('budget')
+
+        # Assuming you have an AdRequest model (not provided in your code)
+        new_ad_request = AdRequest(
+            campaign_id=campaign_id,
+            ad_name=ad_name,
+            ad_description=ad_description,
+            ad_terms=ad_terms,
+            budget=budget
+        )
+
+        try:
+            db.session.add(new_ad_request)
+            db.session.commit()
+            flash('Ad request added successfully!', 'success')
+            return redirect(url_for('view_campaign', campaign_id=campaign_id))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error adding ad request: {str(e)}', 'error')
+            return redirect(url_for('view_campaign', campaign_id=campaign_id))
+    else:
+        return redirect(url_for('user_login'))
+
+@app.route('/ad_request/create', methods=['POST'])
+def create_ad_request():
+    if 'logged_in' in session and session.get('user_type') == 'influencer':
+        influencer = Influencer.query.filter_by(username=session['username']).first()
+        if influencer:
+            campaign_id = request.form['campaign_id']
+            new_ad_request = AdRequest(influencer_id=influencer.id, campaign_id=campaign_id)
+            db.session.add(new_ad_request)
+            db.session.commit()
+            flash('Ad request submitted successfully!', 'success')
+            return redirect(url_for('influencer_profile'))
+    return redirect(url_for('user_login'))
+
+@app.route('/sponsor/ad_requests')
+def view_ad_requests():
+    if 'logged_in' in session and session.get('user_type') == 'sponsor':
+        sponsor = Sponsor.query.filter_by(username=session['username']).first()
+        if sponsor:
+            ad_requests = AdRequest.query.join(Campaign).filter(Campaign.sponsor_id == sponsor.id).all()
+            return render_template('view_ad_requests.html', ad_requests=ad_requests)
+    return redirect(url_for('user_login'))
+
+@app.route('/ad_request/<int:request_id>/accept')
+def accept_ad_request(request_id):
+    if 'logged_in' in session and session.get('user_type') == 'sponsor':
+        ad_request = AdRequest.query.get(request_id)
+        if ad_request:
+            ad_request.status = 'Accepted'
+            db.session.commit()
+            flash('Ad request accepted!', 'success')
+            return redirect(url_for('view_ad_requests'))
+    return redirect(url_for('user_login'))
+
+@app.route('/ad_request/<int:request_id>/reject')
+def reject_ad_request(request_id):
+    if 'logged_in' in session and session.get('user_type') == 'sponsor':
+        ad_request = AdRequest.query.get(request_id)
+        if ad_request:
+            ad_request.status = 'Rejected'
+            db.session.commit()
+            flash('Ad request rejected!', 'success')
+            return redirect(url_for('view_ad_requests'))
+    return redirect(url_for('user_login'))
+
+@app.route('/sponsor/find')
+def find_page():
+    return render_template('find.html')
+
 
 @app.route("/admin/dashboard")
 def admin_dashboard():
