@@ -95,17 +95,19 @@
         </nav>
     </header>
     <main>
-        <h1>Welcome Sponsor 01</h1>
+        <h1>Welcome, {{ username }}</h1>
         <section>
             <h2>Active Campaigns:</h2>
-            <div class="campaign">
-                <span>Campaign 01 | Progress 10%</span>
-                <button class="view">View</button>
-            </div>
-            <div class="campaign">
-                <span>Campaign 02 | Progress 40%</span>
-                <button class="view">View</button>
-            </div>
+            {% if campaigns %}
+                {% for campaign in campaigns %}
+                    <div class="campaign">
+                        <span>{{ campaign.title }} | {{ campaign.date }}</span>
+                        <button class="view">View</button>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No active campaigns found.</p>
+            {% endif %}
         </section>
         <section>
             <h2>New Requests:</h2>

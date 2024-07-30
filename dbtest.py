@@ -9,7 +9,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
-@app.route('/print_campaigns')
+@app.route('/')
 def print_campaigns():
     campaigns = Campaign.query.all()
     campaign_list = []

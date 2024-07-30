@@ -124,7 +124,13 @@ def influencer_profile():
 def sponsor_profile():
     if 'logged_in' in session and session.get('user_type') == 'sponsor':
         username = session.get('username')
-        return render_template('sponsor_profile.html', username=username)
+        sponsor = Sponsor.query.filter_by(username=username).first()
+        if sponsor:
+            campaigns = Campaign.query.filter_by(sponsor_id=sponsor.id).order_by(Campaign.date.desc()).limit(2).all()
+            return render_template('sponsor_profile.html', username=username, campaigns=campaigns)
+        else:
+            flash('Error: Sponsor not found.', 'error')
+            return redirect(url_for('user_login'))
     else:
         return redirect(url_for('user_login'))
 
