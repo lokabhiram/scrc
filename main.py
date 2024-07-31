@@ -42,7 +42,7 @@ def admin_login():
             return render_template("admin_login.html", error=error)
 
 @app.route('/user/login', methods=['GET', 'POST'])
-def login():
+def user_login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -203,6 +203,33 @@ def add_ad_request():
 
     flash('You must be logged in as a sponsor to create an ad request', 'danger')
     return redirect(url_for('login'))
+
+@app.route('/sponsor/find', methods=['GET', 'POST'])
+def sponsor_find_page():
+    if 'logged_in' in session and session.get('user_type') == 'sponsor':
+        if request.method == 'POST':
+            search_type = request.form.get('search_type')
+            keyword = request.form.get('keyword')
+
+            if search_type == 'campaigns':
+                results = Campaign.query.filter(
+                    (Campaign.title.ilike(f'%{keyword}%')) | 
+                    (Campaign.description.ilike(f'%{keyword}%')) | 
+                    (Campaign.niche.ilike(f'%{keyword}%'))
+                ).all()
+            elif search_type == 'influencers':
+                results = Influencer.query.filter(
+                    (Influencer.username.ilike(f'%{keyword}%')) | 
+                    (Influencer.platform_presence.ilike(f'%{keyword}%'))
+                ).all()
+            else:
+                results = []
+
+            return render_template('sponsor_find.html', results=results, search_type=search_type)
+
+        return render_template('sponsor_find.html', results=[], search_type=None)
+    return redirect(url_for('user_login'))
+
 
 
 @app.route('/sponsor/campaign/<int:campaign_id>')

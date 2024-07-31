@@ -128,6 +128,15 @@
 </head>
 <body>
     <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('sponsor_profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('sponsor_campaigns') }}" class="active">Campaigns</a></li>
+                <li><a href="{{ url_for('sponsor_find_page') }}" >Find</a></li>
+                <li><a href="#stats">Stats</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
     </header>
     <main>
         <!-- Display list of campaigns -->
